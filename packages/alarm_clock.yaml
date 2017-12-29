@@ -1,0 +1,175 @@
+alarm_clock:
+  input_number:
+    alarmhour:
+      name: Timmar
+      icon: mdi:timer
+      initial: 6
+      min: 0
+      max: 23
+      step: 1
+    alarmminutes:
+      name: Minuter
+      icon: mdi:timer
+      initial: 40
+      min: 0
+      max: 59
+      step: 5
+  
+  input_boolean:
+    alarmweekday:
+      name: Enbart arbetsdagar 
+      initial: on
+      icon: mdi:calendar
+    alarmweekon:
+      name: Morgonljus
+      initial: on
+    alarm_light_window:
+      name: Fönster i Vardagsrummet
+      initial: on
+    alarm_light_tv:
+      name: TV område i Vardagsrummet
+      initial: off
+    alarm_light_kontoret:
+      name: Kontoret
+      initial: on
+    alarm_light_sovrum:
+      name: Sovrummet
+      initial: on
+      
+  sensor:
+    - platform: template
+      sensors:
+        alarm_time:
+          friendly_name: 'Klockan'
+          value_template: '{{ "%0.02d:%0.02d" | format(states("input_number.alarmhour") | int, states("input_number.alarmminutes") | int) }}'
+  binary_sensor:
+    - platform: workday
+      country: DE
+
+  script:
+    wake_up_1:
+      sequence:
+        - condition: state
+          entity_id: input_boolean.alarm_light_window
+          state: 'on'
+        - service: switch.turn_on
+          data:
+            entity_id: switch.light_1
+    wake_up_2:
+      sequence:
+        - condition: state
+          entity_id: input_boolean.alarm_light_tv
+          state: 'on'
+        - service: switch.turn_on
+          data:
+            entity_id: switch.light_2          
+    wake_up_3:
+      sequence:
+        - condition: state
+          entity_id: input_boolean.alarm_light_sovrum
+          state: 'on'
+        - service: switch.turn_on
+          data:
+            entity_id: switch.light_3
+    wake_up_4:
+      sequence:
+        - condition: state
+          entity_id: input_boolean.alarm_light_kontoret
+          state: 'on'
+        - service: switch.turn_on
+          data:
+            entity_id: switch.light_4
+    wake_up_h_inc:
+      sequence:
+        - service: input_number.increment
+          data:
+            entity_id: input_number.alarmhour
+    wake_up_h_dec:
+      sequence:
+        - service: input_number.decrement
+          data:
+            entity_id: input_number.alarmhour
+    wake_up_m_inc:
+      sequence:
+        - service: input_number.increment
+          data:
+            entity_id: input_number.alarmminutes
+    wake_up_m_dec:
+      sequence:
+        - service: input_number.decrement
+          data:
+            entity_id: input_number.alarmminutes          
+    #Lights for the morning wake up routine
+    wake_up_light:
+      sequence:
+       - service: script.wake_up_1
+       - service: script.wake_up_2
+       - service: script.wake_up_3
+       - service: script.wake_up_4
+
+  group:
+    alarmclock:
+      view: no
+      name: Vakna med ljus
+      icon: mdi:lightbulb
+    #  control: hidden
+      entities: 
+        - sensor.alarm_time
+        - input_number.alarmhour
+        - input_number.alarmminutes
+        - input_boolean.alarmweekday
+    #    - input_boolean.alarmweekon
+        - group.wake_up_lights
+    
+    wake_up_lights:
+      view: no
+      name: Ljus at tända på morgonen
+      control: hidden
+      icon: mdi:lightbulb
+      entities: 
+        - input_boolean.alarm_light_window
+        - input_boolean.alarm_light_tv
+        - input_boolean.alarm_light_kontoret
+        - input_boolean.alarm_light_sovrum  
+
+  automation:
+    - alias: Wake me up with bedroom light transition for weekdays
+      trigger:
+      - platform: time
+        minutes: /5
+        seconds: 0
+      condition:
+      - condition: state
+        entity_id: input_boolean.alarmweekon
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.alarmweekday
+        state: 'on'
+      - condition: state
+        entity_id: group.alarmclock
+        state: 'on'
+      - condition: template
+        value_template: '{{ now().strftime("%H:%M") == states.sensor.alarm_time.state
+          }}'
+      action:
+      - service: script.wake_up_light
+    - alias: Wake me up with bedroom light transition for weekend days
+      trigger:
+      - platform: time
+        minutes: /5
+        seconds: 0
+      condition:
+      - condition: state
+        entity_id: input_boolean.alarmweekon
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.alarmweekday
+        state: 'off'
+      - condition: state
+        entity_id: group.alarmclock
+        state: 'on'
+      - condition: template
+        value_template: '{{ now().strftime("%H:%M") == states.sensor.alarm_time.state
+          }}'
+      action:
+      - service: script.wake_up_light  

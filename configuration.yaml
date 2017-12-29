@@ -1,0 +1,180 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Home
+  # Location required to calculate the time the sun rises and sets
+  latitude: !secret latitude
+  longitude: !secret longitude
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: 20
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Europe/Stockholm
+  # Customization file
+  customize: !include customize.yaml
+  customize_glob:
+    "*.*":
+      custom_ui_state_card: state-card-custom-ui
+  packages: !include_dir_merge_named packages
+
+mqtt:
+
+  
+device_tracker:
+  - platform: asuswrt
+    host: !secret host
+    username: !secret router_login
+    password: !secret router_pw
+    protocol: telnet
+    track_new_devices: no
+    interval_seconds: 30
+    consider_home: 300
+  - platform: bluetooth_tracker
+
+logger:
+  default: warning
+  logs:
+    custom_components.switch.my_flux: debug
+#    homeassistant.components.switch.broadlink: debug
+#    homeassistant.components.duckdns: debug
+#    homeassistant.components.device_tracker: info
+#    homeassistant.components.discovery: info
+#    homeassistant.components.media_player: info
+# Show links to resources in log and frontend
+# introduction:
+
+# Enables the frontend
+frontend:
+  javascript_version: latest
+
+  extra_html_url:
+    - /local/custom_ui/state-card-value_only.html
+    - /local/custom_ui/state-card-custom-ui.html
+    - /local/custom_ui/state-card-tiles.html
+    - /local/custom_ui/state-card-table.html
+    - /local/custom_ui/state-card-floorplan.html 
+  extra_html_url_es5:
+    - /local/custom_ui/state-card-custom-ui-es5.html
+    - /local/custom_ui/state-card-tiles.html
+    - /local/custom_ui/state-card-value_only.html
+
+  themes: !include_dir_merge_named themes/
+
+    
+panel_custom: !include panel_custom.yaml
+    
+# Enables configuration UI
+config:
+
+http:
+  # Secrets are defined in the file secrets.yaml
+  api_password: !secret http_password
+  # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+  base_url: !secret base_url
+  ssl_certificate: /ssl/fullchain.pem
+  ssl_key: /ssl/privkey.pem
+
+# Checks for available updates
+# Note: This component will send some information about your system to
+# the developers to assist with development of Home Assistant.
+# For more information, please see:
+# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
+updater:
+  # Optional, allows Home Assistant developers to focus on popular components.
+  # include_used_components: true
+
+# Discover some devices automatically
+discovery:
+
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+
+# Enables support for tracking state changes over time
+history:
+
+# View all events in a logbook
+logbook:
+
+# Enables a map showing the location of tracked devices
+# map:
+
+# Track the sun
+sun:
+
+# Text to speech
+tts:
+  - platform: google
+  
+ifttt:
+  key: !secret ifttt_token
+  
+sensor:
+  # Weather tomorrow
+  - platform: yr
+    name: Väder imorgon
+    forecast: 24
+    monitored_conditions:
+      - symbol
+      - temperature
+      - precipitation
+  # Weather today
+  - platform: yr
+    name: Väder idag
+    forecast: 3
+    monitored_conditions:
+      - symbol
+      - temperature
+      - precipitation
+
+binary_sensor:
+  - platform: mqtt
+    state_topic: dummy/floorplan/sensor
+    name: Floorplan
+
+media_player:
+  - platform: samsungtv
+    scan_interval: 10
+    name: samsung_tv_remote
+    host: 192.168.3.105
+  - platform: kodi
+    scan_interval: 10
+    host: 192.168.3.102
+    port: 80
+    name: Kodi
+    username: kodi
+    password: kodi
+    enable_websocket: true
+  - platform: bluesound
+    hosts:
+      - host: 192.168.3.103
+        name: bluesound_vardagsrum
+      - host: 192.168.3.104
+        name: bluesound_kontoret
+  - platform: cast
+    scan_interval: 2
+    hosts:
+      - host: 192.168.3.110
+        name: google home kontoret
+      - host: 192.168.3.111
+        name: google home vardagsrum
+      - host: 192.168.3.112
+        name: chromecast vardagsrum
+        
+  - platform: spotify
+    client_id: !secret spotify_id
+    client_secret: !secret spotify_secret
+    aliases:
+      6b1113a155c44ed2ba9d81eda9e5ed41: 'Google Home Kontoret'
+      3982f6e55d03b3c39c126d844fb747338417ed57: 'Vardagsrum'
+      fbe24fbbb6c5d93939802e5030cae1001b5442ba: 'Kontoret'
+
+
+
+customizer:
+  custom_ui: local 
+    
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+switch: !include switches.yaml
+

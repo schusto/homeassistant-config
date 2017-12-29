@@ -1,0 +1,17 @@
+my_flux_conf:
+  switch:
+    - platform: my_flux
+      disable_brightness_adjust: true
+      init_on_turn_on: true
+      mode: mired
+      transition: 300
+      interval: 300
+      lights:
+        - light.matbord
+        - light.stalampa
+        - light.bank_tv
+        - light.fonster_tv
+        - light.vardagsrum_ceiling
+        - light.vardagsrum_ceiling_1
+        - light.vardagsrum_ceiling_2
+#        - light.sovrum_ceiling

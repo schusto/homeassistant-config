@@ -1,0 +1,229 @@
+      name: Floorplan
+      image: /local/custom_ui/floorplan/floorplan.svg
+      stylesheet: /local/custom_ui/floorplan/floorplan.css
+      
+      # These options are optional
+      # warnings:                  # enable warnings (to find out why things might ot be working correctly)
+      # pan_zoom:                  # enable experimental panning / zooming
+      hide_app_toolbar:          # hide the application toolbar (when used as a custom panel)
+      # date_format: DD-MMM-YYYY   # Date format to use in hover-over text
+      
+#      last_motion_entity: sensor.template_last_motion
+#      last_motion_class: last-motion
+
+      groups:
+        - name: mediaplayer_spotify_button
+          entities:
+            - switch.kontoret_spotify 
+            - switch.vardagsrum_spotify
+          states:
+            - state: 'false'
+              class: 'media-off'
+            - state: 'true'
+              class: 'spotify-on'
+          action:
+            domain: homeassistant   # This optional parameter allows you to use other services such as homeassistant.toggle like here.
+            service: turn_on
+        - name: lights
+          entities:
+            - switch.light_1
+            - switch.light_2
+            - switch.light_3
+            - switch.light_4
+            - switch.light_5
+            - light.stalampa
+            - light.vardagsrum
+            - light.sovrum_2
+          states:
+            - state: 'on'
+              class: 'light-on'
+            - state: 'off'
+              class: 'light-off'
+          action:
+            domain: homeassistant   # This optional parameter allows you to use other services such as homeassistant.toggle like here.
+            service: toggle
+        - name: media_players_toggle
+          entities:
+            - switch.stereo_pa
+          states:
+            - state: 'off'
+              class: 'media-off'
+            - state: 'on'
+              class: 'media-on'
+          action:
+            domain: switch   # This optional parameter allows you to use other services such as homeassistant.toggle like here.
+            service: toggle
+        - name: media_players
+          entities:
+            - media_player.bluesound_vardagsrum
+            - media_player.bluesound_kontoret
+          states:
+            - state: 'off'
+              class: 'media-off'
+            - state: 'idle'
+              class: 'media-off'
+            - state: 'paused'
+              class: 'media-off'
+            - state: 'playing'
+              class: 'media-on'
+            - state: 'on'
+              class: 'media-on'
+          action:
+            domain: homeassistant   # This optional parameter allows you to use other services such as homeassistant.toggle like here.
+            service: toggle
+        - name: media_player_switches
+          entities:
+            - switch.stereo_valj_musik
+            - switch.stereo_valj_tv
+            - switch.nad_audio_volume
+            - switch.nad_audio_volume_down
+            - switch.nad_audio_mute
+            - switch.vardagsrum_play_stop
+            - switch.vardagsrum_stop
+            - switch.vardagsrum_next
+            - switch.vardagsrum_prev
+            - switch.kontoret_play_stop
+            - switch.kontoret_stop
+            - switch.kontoret_next
+            - switch.kontoret_prev
+          states:
+            - state: 'off'
+              class: 'media-off'
+            - state: 'on'
+              class: 'media-on'
+          action:
+            domain: switch   # This optional parameter allows you to use other services such as homeassistant.toggle like here.
+            service: turn_on
+        - name: mediaplayer_spotify_button
+          entities:
+            - switch.kontoret_spotify
+            - switch.vardagsrum_spotify
+          states:
+            - state: 'off'
+              class: 'media-off'
+            - state: 'on'
+              class: 'spotify-on'
+          action:
+            domain: homeassistant   # This optional parameter allows you to use other services such as homeassistant.toggle like here.
+            service: turn_on
+
+            
+        - name: media_scripts
+          entities:
+            - script.audio_start
+            - script.join_vardagsrum
+            - script.join_kontoret
+            - script.leave_vardagsrum
+            - script.leave_kontoret
+            - script.end_multiroom
+            - script.volume_up_kontoret
+            - script.volume_down_kontoret
+            - script.volume_up_vardagsrum
+            - script.volume_down_vardagsrum
+            - script.tunein_on_kontoret
+            - script.tunein_on_vardagsrum
+          states:
+            - state: 'off'
+              class: 'media-off'
+            - state: 'on'
+              class: 'media-on'        
+          action:
+            domain: script   # This optional parameter allows you to use other services such as homeassistant.toggle like here.
+            service: turn_on
+        - name: media-display
+          entities:
+            - media_player.bluesound_vardagsrum.attributes.media_title
+            - media_player.bluesound_kontoret.attributes.media_title
+          text_template: '${states.entity ? states.entity : "unknown"}'
+        - name: alarmclock-display
+          entities:
+            - input_number.alarmhour
+            - input_number.alarmminutes
+          text_template: '${entity.state ? Math.ceil(entity.state) : "undefined"}'
+        - name: alarmclock-onoff
+          entities:
+            - input_boolean.alarmweekday
+            - group.alarmclock
+            - input_boolean.alarm_light_window
+            - input_boolean.alarm_light_tv
+            - input_boolean.alarm_light_kontoret
+            - input_boolean.alarm_light_sovrum
+          states:
+            - state: 'off'
+              class: 'media-off'
+            - state: 'on'
+              class: 'media-on'                
+          action:
+            domain: homeassistant   # This optional parameter allows you to use other services such as homeassistant.toggle like here.
+            service: toggle
+        - name: alarmclock-set
+          entities:           
+            - script.wake_up_h_inc
+            - script.wake_up_m_inc
+            - script.wake_up_h_dec
+            - script.wake_up_m_dec
+          states:
+            - state: 'off'
+              class: 'media-off'
+          action:
+            domain: script   # This optional parameter allows you to use other services such as homeassistant.toggle like here.
+            service: turn_on
+        - name: tv
+          entities:
+            - media_player.samsung_tv_remote
+          states:
+            - state: 'off'
+              class: 'media-off'
+            - state: 'idle'
+              class: 'media-off'
+            - state: 'paused'
+              class: 'media-off'
+            - state: 'playing'
+              class: 'media-on'
+            - state: 'on'
+              class: 'media-on'
+          action:
+            domain: switch   # This optional parameter allows you to use other services such as homeassistant.toggle like here.
+            service: toggle
+            data:
+              entity_id: switch.tv_power
+              
+        - name: trackers
+          entities:
+            - group.erik
+            - group.johanna
+            - group.ivan
+          states:
+            - state: 'home'
+              class: 'tracker-on'
+            - state: 'away'
+              class: 'tracker-off'
+            - state: 'not_home'
+              class: 'tracker-off'
+              
+        - name: select_wakeup_lights
+          elements:
+            - button_select_lights
+          action:
+            domain: class
+            service: toggle
+            data:
+              elements:
+                - WakeUp
+              classes:
+                - layer-visible
+                - layer-hidden
+              default_class: layer-hidden                
+        - name: done_wakeup_lights
+          elements:
+            - button_select_lights_done
+          action:
+            domain: class
+            service: toggle
+            data:
+              elements:
+                - WakeUp
+              classes:
+                - layer-hidden
+                - layer-visible
+              default_class: layer-visible               

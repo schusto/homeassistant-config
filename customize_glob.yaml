@@ -1,0 +1,4 @@
+    # Customize entities matching a pattern
+# customize_glob:
+  "switch.light_*":
+    icon: mdi:lightbulb

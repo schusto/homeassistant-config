@@ -1,0 +1,18 @@
+hue_conf:
+
+  homeassistant:
+    hue:
+      bridges:
+        - host: !secret hue_bridge
+        - filename: phue.conf
+        - allow_hue_groups: true
+        
+  sensor:
+    - platform: hue_sensor
+    - platform: template
+      sensors:
+        remote_vardagsrum_update:
+          value_template: '{{ states.sensor.vardagsrum_kontakt.attributes.last_updated }}'
+        remote_sovrum_update:
+          value_template: '{{ states.sensor.sovrum_kontakt.attributes.last_updated }}'
+          

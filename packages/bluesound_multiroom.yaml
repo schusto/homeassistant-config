@@ -1,0 +1,66 @@
+bluesound_multiroom:
+
+  script:
+  #Bluesound player group handling
+  #Vardagsrunm is joined by Kontoret
+    join_vardagsrum:
+      sequence:
+        service: rest_command.join_with_vardagsrum
+    #Kontore leaves Vardagsrum
+    leave_vardagsrum:
+      sequence:
+        service: rest_command.leave_vardagsrum
+      #Kontore leaves Vardagsrum
+    end_multiroom:
+      sequence:
+        - service: rest_command.leave_vardagsrum
+        - service: rest_command.leave_kontoret
+    #Vardagsrunm is joined by Kontoret
+    join_kontoret:
+      sequence:
+        service: rest_command.join_with_kontoret
+    #Kontore leaves Vardagsrum
+    leave_kontoret:
+      sequence:
+        service: rest_command.leave_kontoret
+    #Automatic multiroom handling
+    audio_multiuroom:
+      sequence:
+        - service: script.audio_multiroom_kontoret
+        - service: script.audio_multiroom_vardagsrum
+  
+    audio_multiroom_kontoret:
+      sequence:
+        - condition: and
+          conditions:
+            - condition: state 
+              entity_id: media_player.bluesound_kontoret
+              state: ’playing'
+            - condition: template
+              value_template: '{{ states.media_player.bluesound_vardagsrum != "playing" }}'
+        - service: script.join_kontoret
+    audio_multiroom_vardagsrum:
+      sequence:
+        - condition: and
+          conditions:
+            - condition: state 
+              entity_id: media_player.bluesound_vardagsrum
+              state: ’playing'
+            - condition: template
+              value_template: '{{ states.media_player.bluesound_kontoret != "playing" }}'
+        - service: script.join_vardagsrum      
+  
+    
+  homeassistant:
+  # URL Services
+    rest_command:
+      join_with_vardagsrum:
+        url: 'http://192.168.3.103:11000/AddSlave?slave=192.168.3.104&group=Vardagsrum'
+      leave_vardagsrum:
+        url: 'http://192.168.3.103:11000/RemoveSlave?slave=192.168.3.104'
+      join_with_kontoret:
+        url: 'http://192.168.3.104:11000/AddSlave?slave=192.168.3.103&group=Vardagsrum'
+      leave_kontoret:
+        url: 'http://192.168.3.104:11000/RemoveSlave?slave=192.168.3.103'
+     
+  

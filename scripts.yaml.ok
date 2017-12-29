@@ -1,0 +1,70 @@
+#script:
+  #Turn all all switches
+  lights_on:
+    sequence:
+      - alias: Lights 1 on
+        service: switch.turn_on
+        data:
+          entity_id: switch.light_1
+      - alias: Lights 2 on
+        service: switch.turn_on
+        data:
+          entity_id: switch.light_2
+      - alias: Lights 3 on
+        service: switch.turn_on
+        data:
+          entity_id: switch.light_3
+  #NAD on and turned to AUX (Bluesound)
+  audio_start:
+    sequence:
+      - alias: aux_on_1
+        service: switch.turn_on
+        data:
+          entity_id: switch.audio_music
+      - alias: power_on
+        service: switch.turn_on
+        data:
+          entity_id: switch.audio
+      - alias: delay
+        delay: 
+          seconds: 7
+      - alias: aux_on_2
+        service: switch.turn_on
+        data:
+          entity_id: switch.audio_music
+
+#Bluesound player group handling
+  #Vardagsrunm is joined by Kontoret
+  join_vardagsrum:
+    sequence:
+      service: rest_command.join_with_vardagsrum
+  #Kontore leaves Vardagsrum
+  leave_vardagsrum:
+    sequence:
+      service: rest_command.leave_vardagsrum
+  #Vardagsrunm is joined by Kontoret
+  join_kontoret:
+    sequence:
+      service: rest_command.join_with_kontoret
+  #Kontore leaves Vardagsrum
+  leave_kontoret:
+    sequence:
+      service: rest_command.leave_kontoret
+  #Automatic multiroom handling
+ # audio_multiroom:
+ #   sequence:
+ #     - condition: and
+ #       conditions:
+ #         - condition: or
+ #           conditions:
+ #             - condition: state 
+ #               entity.id: media_player.bluesound_kontoret
+ #               state: 'playing'
+ #             - condition: state
+ #               entity.id: media_player.bluesound_vardagsrum
+ #               state: 'playing'
+ #         - condition: template
+ #           value_template: '{{ media_player.bluesound_vardagsrum.token = media_player.bluesound_kontoret.token }}'
+ #     - service: script.leave_vardagsrum
+ #     - service: script.leave_kontoret
+      

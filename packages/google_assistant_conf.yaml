@@ -1,0 +1,27 @@
+google_assistant_conf:
+
+  homeassistant:
+    google_assistant:
+      project_id: !secret google_project
+      client_id: !secret google_client
+      access_token: !secret google_token
+      agent_user_id: !secret google_agent
+      api_key: !secret google_api_key
+      expose_by_default: false
+      exposed_domains:
+        - switch
+        - light
+        - group
+        - media_player
+        - scene
+        - script
+    
+  switch:
+    - platform: template
+      switches:
+        google_assistant_sync:
+          value_template: "{{'off'}}"
+          turn_on:
+            service: google_assistant.request_sync
+          turn_off:
+            service: google_assistant.request_sync

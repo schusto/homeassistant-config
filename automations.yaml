@@ -1,0 +1,216 @@
+  # Dimmer Vardagsrum Knapp 1 tryckt för 2 sec
+- alias: hue_dimmer_vardagsrum_1_hold
+  trigger: 
+    - platform: state
+      entity_id: sensor.remote_vardagsrum_update, sensor.vardagsrum_kontakt
+  condition:
+    - condition: state
+      entity_id: sensor.vardagsrum_kontakt
+      state: '1_hold'
+  action:
+    - service: homeassistant.toggle
+      data:
+        entity_id: group.switches_vardagsrum
+- alias: hue_dimmer_vardagsrum_4_hold
+  trigger: 
+    - platform: state
+      entity_id: sensor.remote_vardagsrum_update, sensor.vardagsrum_kontakt
+  condition:
+    - condition: state
+      entity_id: sensor.vardagsrum_kontakt
+      state: '4_hold'
+  action:
+    - service: homeassistant.toggle
+      data:
+        entity_id: light.matbord        
+- alias: hue_dimmer_sovrum_1_hold
+  trigger: 
+    - platform: state
+      entity_id: sensor.remote_sovrum_update, sensor.sovrum_kontakt
+  condition:
+    - condition: state
+      entity_id: sensor.sovrum_kontakt
+      state: '1_hold'
+  action:
+    - service: homeassistant.toggle
+      data:
+        entity_id: switch.light_3       
+- alias: hue_dimmer_sovrum_4_hold
+  trigger: 
+    - platform: state
+      entity_id: sensor.remote_sovrum_update, sensor.sovrum_kontakt
+  condition:
+    - condition: state
+      entity_id: sensor.sovrum_kontakt
+      state: '4_hold'
+  action:
+    - service: homeassistant.toggle
+      data:
+        entity_id: switch.light_3               
+    - service: homeassistant.toggle
+      data:
+        entity_id: switch.light_1
+    - service: homeassistant.toggle
+      data:
+        entity_id: switch.light_2
+
+- alias: Stäng av ljuset när TV slås på
+  id: light_off_when_tv_on
+  trigger:
+    platform: state
+    entity_id: media_player.samsung_tv_remote
+    from: 'off'
+    to: 'on'
+  action:
+    service: switch.turn_off
+    entity_id: switch.light_nono
+- alias: Sätt på stereon när musiken sätter igång
+  id: audio_on_when_music
+  trigger:
+    platform: state
+    entity_id: media_player.bluesound_vardagsrum
+#    from: idle
+    to: playing
+  action:
+    service: script.audio_start
+- alias: Sätt på stereon när TV:n sätter igång
+  id: audio_on_when_tv
+  trigger:
+    platform: state
+    entity_id: media_player.samsung_tv_remote
+    from: 'off'
+    to: 'on'
+  condition:
+    condition: or
+    conditions:
+    - condition: state
+      entity_id: media_player.bluesound_vardagsrum
+      state: paused
+    - condition: state
+      entity_id: media_player.bluesound_vardagsrum
+      state: idle
+  action:
+    service: script.audio_tv_start
+
+- alias: Stäng av stereon
+  id: stereo_off
+  trigger:
+  - platform: state
+    entity_id: media_player.samsung_tv_remote
+    from: 'on'
+    to: 'off'
+    for: 00:10
+  - platform: state
+    entity_id: media_player.bluesound_vardagsrum
+    to: paused
+    for: 00:10
+  - platform: state
+    entity_id: media_player.bluesound_vardagsrum
+    to: idle
+    for: 00:10
+  condition:
+  - condition: state
+    entity_id: media_player.samsung_tv_remote
+    state: 'off'
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: media_player.bluesound_vardagsrum
+      state: idle
+    - condition: state
+      entity_id: media_player.bluesound_vardagsrum
+      state: paused
+  action:
+  - service: switch.turn_off
+    entity_id: switch.stereo_pa
+- alias: kodi_pause
+  id: kodi_pause
+  trigger:
+  - entity_id: media_player.samsung_tv_remote
+    from: 'on'
+    platform: state
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: media_player.kodi
+    state: playing
+  action:
+  - data:
+      entity_id: media_player.kodi
+    entity_id: media_player.kodi
+    service: media_player.media_stop
+
+- alias: Startup settings
+  initial_state: 'on'
+  trigger:
+  - platform: homeassistant
+    event: start
+  action:
+    - service: frontend.set_theme
+      data:
+        name: material_dark
+#    - service: switch.myflux_force_update
+#    - service: switch.turn_on
+#      data:
+#        entity_id: switch.myflux
+- action:
+  - data:
+      event: ErikHome
+      value1: Erik har kommit hem
+    service: ifttt.trigger
+  alias: Erik hemma
+  condition: []
+  id: '1513519484622'
+  trigger:
+  - entity_id: device_tracker.erik
+    from: not_home
+    platform: state
+    to: home
+- action:
+  - data:
+      event: JohannaHome
+      value1: Johanna är hemma
+    service: ifttt.trigger
+  alias: Johanna Hemma
+  condition: []
+  id: '1513520133976'
+  trigger:
+  - entity_id: device_tracker.johanna
+    from: not_home
+    platform: state
+    to: home
+
+    
+- alias: Auto Spotify till Kontoret
+  id: auto_sportify_kontoret
+  trigger:
+    - platform: template
+      value_template: "{% if is_state_attr('media_player.spotify', 'source', 'Google Home Kontoret') %} true {% endif %}"
+    - platform: state
+      entity_id: media_player.google_home_kontoret
+      to: "playing"
+  condition:
+  - condition: template
+    value_template: "{% if is_state_attr('media_player.spotify', 'source', 'Google Home Kontoret') %} true {% endif %}"
+  - condition: state
+    entity_id: media_player.google_home_kontoret
+    state: 'playing'
+  action:
+    service: script.spotify_on_kontoret
+- alias: Auto Spotify till Vardagsrum
+  id: auto_sportify_vardagsrum
+  trigger:
+    - platform: template
+      value_template: "{% if is_state_attr('media_player.spotify', 'source', 'Google Home Vardagsrum') %} true {% endif %}"
+    - platform: state
+      entity_id: media_player.google_home_vardagsrum
+      to: "playing"
+  condition:
+  - condition: template
+    value_template: "{% if is_state_attr('media_player.spotify', 'source', 'Google Home Vardagsrum') %} true {% endif %}"
+  - condition: state
+    entity_id: media_player.google_home_vardagsrum
+    state: 'playing'
+  action:
+    service: script.spotify_on_vardagsrum
+    

@@ -1,0 +1,278 @@
+media_player_google_assistant:
+# Simulating media player controlls through switches and script
+# temporary package to test the useability
+# idea to implement automatic generation as custom component
+  switch:
+    - platform: template
+      switches:
+        kontoret_play_stop:
+          value_template: "{{ is_state('media_player.bluesound_kontoret', 'playing') }}"
+          turn_on:
+            service: media_player.media_play_pause
+            data:
+              entity_id: media_player.bluesound_kontoret
+          turn_off:
+            service: media_player.media_stop
+            data:
+              entity_id: media_player.bluesound_kontoret
+        kontoret_stop:
+          value_template: "{{ is_state('media_player.bluesound_kontoret', 'idle') }}"
+          turn_off:
+            service: media_player.media_stop
+            data:
+              entity_id: media_player.bluesound_kontoret
+          turn_on:
+            service: media_player.media_stop
+            data:
+              entity_id: media_player.bluesound_kontoret
+        kontoret_prev:
+          value_template: "{{ 'off' }}"
+          turn_off:
+            service: media_player.media_previous_track
+            data:
+              entity_id: media_player.bluesound_kontoret
+          turn_on:
+            service: media_player.media_previous_track
+            data:
+              entity_id: media_player.bluesound_kontoret
+        kontoret_next:
+          value_template: "{{ 'off' }}"
+          turn_off:
+            service: media_player.media_next_track
+            data:
+              entity_id: media_player.bluesound_kontoret
+          turn_on:
+            service: media_player.media_next_track
+            data:
+              entity_id: media_player.bluesound_kontoret
+        vardagsrum_play_stop:
+          value_template: "{{ is_state('media_player.bluesound_kontoret', 'playing') }}"
+          turn_on:
+            service: media_player.media_play_pause
+            data:
+              entity_id: media_player.bluesound_vardagsrum
+          turn_off:
+            service: media_player.media_stop
+            data:
+              entity_id: media_player.bluesound_vardagsrum
+        vardagsrum_stop:
+          value_template: "{{ is_state('media_player.bluesound_kontoret', 'idle') }}"
+          turn_off:
+            service: media_player.media_stop
+            data:
+              entity_id: media_player.bluesound_vardagsrum
+          turn_on:
+            service: media_player.media_stop
+            data:
+              entity_id: media_player.bluesound_vardagsrum
+        vardagsrum_prev:
+          value_template: "{{ 'off' }}"
+          turn_off:
+            service: media_player.media_previous_track
+            data:
+              entity_id: media_player.bluesound_vardagsrum
+          turn_on:
+            service: media_player.media_previous_track
+            data:
+              entity_id: media_player.bluesound_vardagsrum
+        vardagsrum_next:
+          value_template: "{{ 'off' }}"
+          turn_off:
+            service: media_player.media_next_track
+            data:
+              entity_id: media_player.bluesound_vardagsrum
+          turn_on:
+            service: media_player.media_next_track
+            data:
+              entity_id: media_player.bluesound_vardagsrum
+        spotify_play_stop:
+          value_template: "{{ is_state('media_player.spotify', 'playing') }}"
+          turn_on:
+            service: media_player.media_play_pause
+            data:
+              entity_id: media_player.spotify
+          turn_off:
+            service: media_player.media_stop
+            data:
+              entity_id: media_player.spotify
+        spotify_stop:
+          value_template: "{{ is_state('media_player.spotify', 'playing') }}"
+          turn_off:
+            service: media_player.media_stop
+            data:
+              entity_id: media_player.spotify
+          turn_on:
+            service: media_player.media_stop
+            data:
+              entity_id: media_player.spotify
+        spotify_prev:
+          value_template: "{{ 'off' }}"
+          turn_off:
+            service: media_player.media_previous_track
+            data:
+              entity_id: media_player.spotify
+          turn_on:
+            service: media_player.media_previous_track
+            data:
+              entity_id: media_player.spotify
+        spotify_next:
+          value_template: "{{ 'off' }}"
+          turn_off:
+            service: media_player.media_next_track
+            data:
+              entity_id: media_player.spotify
+          turn_on:
+            service: media_player.media_next_track
+            data:
+              entity_id: media_player.spotify
+        spotify_shuffle:
+          value_template: "{{ 'off' }}"
+          turn_on:
+            service: media_player.shuffle_set
+            data:
+              entity_id: media_player.spotify
+              shuffle: "true"
+          turn_off:
+            service: media_player.shuffle_set
+            data:
+              entity_id: media_player.spotify
+              shuffle: "false"
+        vardagsrum_spotify:
+          value_template: "{{ is_state_attr('media_player.bluesound_vardagsrum', 'source', 'Spotify') }}"
+          turn_off:
+            service: script.turn_on
+            data:
+              entity_id: script.spotify_on_vardagsrum
+          turn_on:
+            service: script.turn_on
+            data:
+              entity_id: script.spotify_on_vardagsrum
+        kontoret_spotify:
+          value_template: "{{ is_state_attr('media_player.bluesound_kontoret', 'source', 'Spotify') }}"
+          turn_off:
+            service: script.turn_on
+            data:
+              entity_id: script.spotify_on_kontoret
+          turn_on:
+            service: script.turn_on
+            data:
+              entity_id: script.spotify_on_kontoret           
+  script:
+  #Cast Spotify till Vardagsrum
+    spotify_on_vardagsrum:
+      sequence:
+        - service: media_player.select_source
+          data:
+            entity_id: media_player.spotify
+            source: "Vardagsrum"
+        - condition: template
+          value_template: "{% if not is_state('media_player.bluesound_vardagsrum', 'playing') %} true {% endif %}"
+        - service: media_player.media_play_pause
+          data:
+            entity_id: media_player.bluesound_vardagsrum
+  
+            #Cast Spotify till Kontoret
+    spotify_on_kontoret:
+      sequence:
+        - service: media_player.select_source
+          data:
+            entity_id: media_player.spotify
+            source: "Kontoret"
+  #      - delay: miliseconds: 500
+        - condition: template
+          value_template: "{% if not is_state('media_player.bluesound_kontoret', 'playing') %} true {% endif %}"
+        - service: media_player.media_play_pause
+          data:
+            entity_id: media_player.bluesound_kontoret
+    #Cast Spotify till Google Home
+    spotify_on_home:
+      sequence:
+        - service: media_player.select_source
+          data:
+            entity_id: media_player.spotify
+            source: "Google Home"
+        - service: media_player.play_media
+          data:
+            entity_id: media_player.spotify
+    #TuneIn till Vardagsrum
+    tunein_on_vardagsrum:
+      sequence:
+        - service: media_player.select_source
+          data:
+            entity_id: media_player.bluesound_vardagsrum
+            source: "TuneIn"
+        - service: media_player.play_media
+          data:
+            entity_id: media_player.bluesound_vardagsrum
+  
+            #Cast Spotify till Kontoret
+    tunein_on_kontoret:
+      sequence:
+        - service: media_player.select_source
+          data:
+            entity_id: media_player.bluesound_kontoret
+            source: "TuneIn"
+        - service: media_player.play_media
+          data:
+            entity_id: media_player.bluesound_kontoret          
+    volume_up_kontoret:
+      sequence:
+        - service: media_player.volume_set
+          data_template:
+            entity_id: media_player.bluesound_kontoret
+            volume_level: '{{ states.media_player.bluesound_kontoret.attributes.volume_level + 0.03 }}' 
+   
+    volume_down_kontoret:
+      sequence:
+        - service: media_player.volume_set
+          data_template:
+            entity_id: media_player.bluesound_kontoret
+            volume_level: '{{ states.media_player.bluesound_kontoret.attributes.volume_level - 0.03 }}'
+  
+    volume_up_vardagsrum:
+      sequence:
+        - service: media_player.volume_set
+          data_template:
+            entity_id: media_player.bluesound_vardagsrum
+            volume_level: '{{ states.media_player.bluesound_vardagsrum.attributes.volume_level + 0.15 }}' 
+   
+    volume_down_vardagsrum:
+      sequence:
+        - service: media_player.volume_set
+          data_template:
+            entity_id: media_player.bluesound_vardagsrum
+            volume_level: '{{ states.media_player.bluesound_vardagsrum.attributes.volume_level - 0.15 }}'
+            
+    sleep_timer_kontoret:
+      sequence:
+        - delay: 
+            minutes: 45
+        - condition: state
+          entity_id: media_player.bluesound_kontoret
+          state: 'playing'
+        - service: switch.turn_on
+          data:
+            entity_id: switch.kontoret_play_stop 
+            
+    sleep_timer_vardagsrum:
+      sequence:
+        - delay: 
+            minutes: 45
+        - condition: state
+          entity_id: media_player.bluesound_vardagsrum
+          state: 'playing'
+        - service: switch.turn_on
+          data:
+            entity_id: switch.vardagsrum_play_stop 
+  
+    sleep_timer_spotify:
+      sequence:
+        - delay:
+            minutes: 45
+        - condition: state
+          entity_id: media_player.spotify
+          state: 'playing'
+        - service: switch.turn_on 
+          data:
+            entity_id: switch.spotify_play_stop
+  

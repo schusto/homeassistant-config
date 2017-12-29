@@ -1,0 +1,221 @@
+#remote_view:
+#  name: Fjärrkontroll
+#  entities:
+#    - script.main_remote
+
+floorplan:
+  view: no
+  name: Översikt
+  entities:
+  - binary_sensor.floorplan
+
+overview:
+  view: yes
+  icon: mdi:floor-plan
+  name: Översikt
+  entities:  
+#  - group.remote_view
+  - group.floorplan
+    
+default_view:
+  view: yes
+  icon: mdi:home
+  name: Casa Olsson & Schumann
+  entities:
+#  - group.status
+  - group.floorplan
+  - group.light
+  - group.media
+  - group.alarmclock
+  - sun.sun
+  - sensor.vader_idag_symbol
+  - sensor.vader_idag_temperature
+  - sensor.vader_idag_precipitation
+  - sensor.vader_imorgon_symbol
+  - sensor.vader_imorgon_temperature
+  - sensor.vader_imorgon_precipitation
+  - device_tracker.erik
+  - sensor.track_erik
+  - device_tracker.johanna
+  - device_tracker.ivan
+#  - media_player.samsung_tv_remote
+
+media_view:
+  view: yes
+  icon: mdi:speaker-wireless
+  name: Media
+  entities:
+  - group.media
+  - sun.sun
+  - sensor.vader_idag_symbol
+  - sensor.vader_idag_temperature
+  - sensor.vader_idag_precipitation
+  - sensor.vader_imorgon_symbol
+  - sensor.vader_imorgon_temperature
+  - sensor.vader_imorgon_precipitation
+  - group.erik
+  - group.johanna
+  - group.ivan
+  - media_player.bluesound_vardagsrum
+  - media_player.spotify
+  - media_player.samsung_tv_remote
+  - media_player.kodi
+  - media_player.vardagsrum
+  - media_player.bluesound_kontoret  
+  - media_player.google_home_vardagsrum
+  - media_player.google_home_kontoret
+  
+media_players:
+  view: no
+  icon: mdi:media-player
+  name: Mediaspelare
+  entities:
+  - media_player.bluesound_vardagsrum
+  - media_player.spotify
+  - media_player.samsung_tv_remote
+  - media_player.kodi
+  - media_player.vardagsrum
+  - media_player.bluesound_kontoret  
+ 
+admin_view:
+  view: yes
+  icon: mdi:skull
+  name: Utveckling
+  entities:
+  - group.hue
+  - group.switches_vardagsrum
+  - group.alarmclock
+  - group.status 
+  - group.media 
+  - group.all_lights
+  - group.all_switches
+  - group.all_scripts
+  - group.all_automations
+  - media_player.bluesound_vardagsrum
+  - media_player.spotify
+  - media_player.samsung_tv_remote
+  - media_player.kodi
+  - media_player.vardagsrum
+  - media_player.bluesound_kontoret
+  
+hue:
+  view: no
+  name: Hue
+  entities:
+  - sensor.sovrum_kontakt
+  - sensor.vardagsrum_kontakt
+  - sensor.remote_vardagsrum_update
+  - sensor.remote_sovrum_update
+  - group.switches_vardagsrum
+  - group.all_lights
+  
+status:
+  view: no
+  name: Status 
+  entities:
+  - sun.sun
+  - sensor.vader_idag_symbol
+  - sensor.vader_idag_temperature
+  - sensor.vader_idag_precipitation
+  - sensor.vader_imorgon_symbol
+  - sensor.vader_imorgon_temperature
+  - sensor.vader_imorgon_precipitation
+  - group.erik
+  - group.johanna
+  - group.ivan
+  
+personal_devices:
+  view: no
+  name: Telefoner 
+  entities:
+  - device_tracker.erik_bt
+  - device_tracker.johanna_bt
+  - device_tracker.ivan_bt
+  - device_tracker.erik_mob
+  - device_tracker.johanna_mob
+  - device_tracker.ivan_mob
+  
+erik:
+  view: no
+  name: Erik
+  entities:
+  - device_tracker.erik_mob
+  - device_tracker.erik_bt
+  
+johanna:
+  view: no
+  name: Johanna
+  entities:
+  - device_tracker.johanna_mob
+  - device_tracker.johanna_bt
+
+ivan:
+  view: no
+  name: Ivan
+  entities:
+  - device_tracker.ivan_mob
+  - device_tracker.ivan_bt
+
+media:
+  view: no
+  name: Media
+  control: hidden
+  entities:
+  - group.media_popup
+  - switch.stereo_pa
+  - switch.stereo_valj_musik
+  - switch.stereo_valj_tv
+  - switch.tv_pa
+
+media_popup:
+  view: no
+  name: Musikkontroller
+  control: hidden
+  entities:
+  - script.join_vardagsrum
+  - script.join_kontoret
+  - script.leave_vardagsrum
+  - script.leave_kontoret
+  - script.spotify_on_vardagsrum
+  - script.spotify_on_kontoret
+
+media_all:
+  view: no
+  name: Media
+  control: hidden
+  entities:
+  - switch.stereo_pa
+  - switch.stereo_valj_musik
+  - switch.stereo_valj_tv
+  - script.join_vardagsrum
+  - script.join_kontoret
+  - script.leave_vardagsrum
+  - script.leave_kontoret
+  - script.spotify_on_vardagsrum
+  - script.spotify_on_kontoret
+  - switch.tv_pa
+  
+light:
+  view: no
+  name: Ljus
+  icon: mdi:lightbulb
+  entities:
+  - switch.light_1
+  - switch.light_2
+  - switch.light_3
+  - switch.light_4
+  - switch.light_5
+  - light.sovrum_2
+  - light.vardagsrum
+
+switches_vardagsrum:
+  view: no
+  name: Ljus
+  icon: mdi:lightbulb
+  entities:
+  - switch.light_1
+  - switch.light_2
+  - switch.light_5
+
+
+ 

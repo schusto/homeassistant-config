@@ -1,0 +1,260 @@
+binary_sensor.floorplan:
+  custom_ui_state_card: state-card-floorplan
+  state_topic: dummy/floorplan/sensor
+  friendly_name: Översikt
+  config: !include floorplan.yaml
+
+group.all_scripts:
+  hidden: false
+group.all_lights:
+  hidden: false
+group.all_automations:
+  hidden: false
+group.media:
+  hidden: false
+light.vardagsrum:
+  friendly_name: Ljus Vardagsrum
+  icon: mdi:lightbulb
+  google_assistant: true
+  google_assistant_name: Tree Lights
+  google_assistant_type: light
+  aliases:
+  - Julgran
+  - Gran
+  - Tree
+light.sovrum:
+  friendly_name: Ljus Sovrum
+  icon: mdi:lightbulb
+  google_assistant: true
+  google_assistant_name: Bedroom Lights
+  google_assistant_type: light
+  aliases:
+  - Sovrum Ljys
+  - Lights Bedroom
+
+
+switch.tv_power:
+  friendly_name: T.V. på
+  icon: mdi:television
+  google_assistant: true
+  google_assistant_name: TV on
+  google_assistant_type: switch
+  aliases:
+  - T.V. po
+  - T.V. on
+sun.sun:
+  friendly_name: Sol
+media_player.samsung_tv_remote:
+  icon: mdi:television
+  entity_picture: ''
+  aliases:
+  - TV
+  - TeVe
+  friendly_name: Samsung TV
+  google_assistant: true
+  google_assistant_name: TV
+  google_assistant_type: media_player
+media_player.bluesound_vardagsrum:
+  icon: mdi:loudspeaker
+  entity_picture: ''
+  aliases:
+  - bluesound vardagsrum
+  - bluesound
+  - musik vardagsrum
+  friendly_name: Bluesound Vardagsrum
+  google_assistant: true
+  google_assistant_name: Bluesound Vardagsrum
+  google_assistant_type: media_player
+media_player.bluesound_kontoret:
+  icon: mdi:loudspeaker
+  entity_picture: ''
+  aliases:
+  - bluesound kontoret
+  - bluesound office
+  - musik kontoret
+  - bluesound
+  friendly_name: Bluesound kontoret
+  google_assistant: true
+  google_assistant_name: Bluesound Kontoret
+  google_assistant_type: media_player
+media_player.kodi:
+  icon: mdi:cast
+  entity_picture: ''
+  aliases:
+  - kodi
+  - media
+  - spelare
+  - video
+  friendly_name: Kodi Videospelare
+  google_assistant: true
+  google_assistant_name: Kodi Videospelare
+  google_assistant_type: media_player
+media_player.spotify:
+  icon: mdi:note
+  entity_picture: ''
+  friendly_name: spotify
+  google_assistant: true
+  google_assistant_name: Spotify Control
+  google_assistant_type: media_player
+switch.audio:
+  icon: mdi:music
+switch.audio_tv:
+  icon: mdi:television
+script.spotify_on_vardagsrum:
+  aliases:
+  - spotify po stereo
+  - spela spotify
+  - casta till stereo
+  - spotify in vardagsrum
+  - musik po stereo
+  - musik till stereo
+  friendly_name: cast spotify to stereo
+  google_assistant: true
+  google_assistant_name: spotify on stereo
+  google_assistant_type: switch
+  icon: mdi:cast
+script.spotify_on_kontoret:
+  aliases:
+  - spotify po kontoret
+  - spela spotify po kontoret
+  - casta till kontoret
+  - spotify in office
+  - musik po kontoret
+  - musik till kontoret
+  friendly_name: cast spotify to bluesound kontoret
+  google_assistant: true
+  google_assistant_name: spotify on kontoret
+  google_assistant_type: switch
+  icon: mdi:cast
+script.spotify_on_home:
+  aliases:
+  - spotify po google
+  - spela spotify po google
+  friendly_name: cast spotify to Google Home
+  google_assistant: true
+  google_assistant_name: spotify on home
+  google_assistant_type: switch
+  icon: mdi:cast
+script.join_vardagsrum:
+  aliases:
+  - connect to vardagsrunm
+  - connect to stereo
+  - multiroom vardagsrum
+  - join stereo
+  - join vardagsrum
+  friendly_name: Koppla Kotoret till Vardagsrum
+  google_assistant: true
+  google_assistant_name: multiroom vardagsrum
+  google_assistant_type: switch
+  icon: mdi:speaker
+script.join_kontoret:
+  aliases:
+  - connect to kontoret
+  - multiroom kontoret
+  - join kontoret
+  - join office
+  friendly_name: Koppla Vardagsrum till Kontoret
+  google_assistant: true
+  google_assistant_name: multiroom kontoret
+  google_assistant_type: switch
+  icon: mdi:speaker
+script.end_multiroom:
+  aliases:
+  - leave kontoret
+  - leave vardagsrum
+  - leave office
+  friendly_name: Avsluta Bluesound Multiroom
+  google_assistant: true
+  google_assistant_name: end multiroom
+  google_assistant_type: switch
+  icon: mdi:speaker
+script.audio_multiroom:
+  aliases:
+  - start multiroom
+  - bluesound multiroom
+  friendly_name: Starta Bluesound Multiroom
+  google_assistant: true
+  google_assistant_name: multiroom
+  google_assistant_type: switch
+  icon: mdi:speaker-wireless
+switch.spotify_play_stop:
+  aliases:
+  - spotify pause
+  google_assistant: true
+  google_assistant_name: spotify play
+  google_assistant_type: switch
+switch.spotify_stop:
+  google_assistant: true
+  google_assistant_name: spotify stop
+  google_assistant_type: switch
+switch.spotify_next:
+  google_assistant: true
+  google_assistant_name: spotify next
+  google_assistant_type: switch
+switch.spotify_prev:
+  google_assistant: true
+  google_assistant_name: spotify previous
+  google_assistant_type: switch
+switch.spotify_shuffle:
+  google_assistant: true
+  google_assistant_name: spotify shuffle
+  google_assistant_type: switch
+  
+script.volume_up_kontoret:
+  google_assistant: true
+  google_assistant_name: turn up kontoret
+  google_assistant_type: switch
+script.volume_down_kontoret:
+  google_assistant: true
+  google_assistant_name: turn down kontoret
+  google_assistant_type: switch
+script.volume_up_vardagsrum:
+  google_assistant: true
+  google_assistant_name: turn up vardagsrum
+  google_assistant_type: switch
+script.volume_down_vardagsrum:
+  google_assistant: true
+  google_assistant_name: turn down vardagsrum
+  google_assistant_type: switch
+  
+switch.vardagsrum_play_stop:
+  google_assistant: true
+  google_assistant_name: vardagsrum play
+  google_assistant_type: switch
+switch.vardagsrum_stop:
+  google_assistant: true
+  google_assistant_name: vardagsrum stop
+  google_assistant_type: switch
+switch.vardagsrum_prev:
+  google_assistant: true
+  google_assistant_name: vardagsrum previous
+  google_assistant_type: switch
+switch.vardagsrum_next:
+  google_assistant: true
+  google_assistant_name: vardagsrum next
+  google_assistant_type: switch
+  
+switch.kontoret_play_stop:
+  google_assistant: true
+  google_assistant_name: kontoret play
+  google_assistant_type: switch
+switch.kontoret_stop:
+  google_assistant: true
+  google_assistant_name: kontoret stop
+  google_assistant_type: switch
+switch.kontoret_prev:
+  google_assistant: true
+  google_assistant_name: kontoret previous
+  google_assistant_type: switch
+switch.kontoret_next:
+  google_assistant: true
+  google_assistant_name: kontoret next
+  google_assistant_type: switch
+  
+script.sleep_timer_kontoret:
+  aliases:
+  - kontoret sleep
+  - sleep kontoret
+  google_assistant: true
+  google_assistant_name: kontoret sleep timer
+  google_assistant_type: switch
