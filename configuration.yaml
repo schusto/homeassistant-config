@@ -17,8 +17,24 @@ homeassistant:
       custom_ui_state_card: state-card-custom-ui
   packages: !include_dir_merge_named packages
 
+google_assistant:
+  project_id: !secret google_project
+  client_id: !secret google_client
+  access_token: !secret google_token
+  agent_user_id: !secret google_agent
+  api_key: !secret google_api_key
+  expose_by_default: false
+  exposed_domains:
+    - switch
+    - light
+    - group
+    - media_player
+    - scene
+    - script
+  
 mqtt:
-
+  discovery: true
+  discovery_prefix: homeassistant
   
 device_tracker:
   - platform: asuswrt
@@ -35,6 +51,7 @@ logger:
   default: warning
   logs:
     custom_components.switch.my_flux: debug
+    homeassistant.components.mqtt: debug
 #    homeassistant.components.switch.broadlink: debug
 #    homeassistant.components.duckdns: debug
 #    homeassistant.components.device_tracker: info
@@ -125,6 +142,8 @@ sensor:
       - symbol
       - temperature
       - precipitation
+  - platform: mqtt
+    state_topic: "homeassistant/sensor/nexa"
 
 binary_sensor:
   - platform: mqtt
@@ -168,6 +187,10 @@ media_player:
       3982f6e55d03b3c39c126d844fb747338417ed57: 'Vardagsrum'
       fbe24fbbb6c5d93939802e5030cae1001b5442ba: 'Kontoret'
 
+
+  # URL Services
+
+     
 
 
 customizer:

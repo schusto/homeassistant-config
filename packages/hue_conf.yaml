@@ -1,11 +1,5 @@
 hue_conf:
 
-  homeassistant:
-    hue:
-      bridges:
-        - host: !secret hue_bridge
-        - filename: phue.conf
-        - allow_hue_groups: true
         
   sensor:
     - platform: hue_sensor
@@ -16,3 +10,10 @@ hue_conf:
         remote_sovrum_update:
           value_template: '{{ states.sensor.sovrum_kontakt.attributes.last_updated }}'
           
+  hue:
+    bridges:
+      - host: !secret hue_bridge
+      - filename: phue.conf
+      - allow_hue_groups: true
+
+      

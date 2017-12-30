@@ -51,16 +51,13 @@ bluesound_multiroom:
         - service: script.join_vardagsrum      
   
     
-  homeassistant:
-  # URL Services
-    rest_command:
-      join_with_vardagsrum:
-        url: 'http://192.168.3.103:11000/AddSlave?slave=192.168.3.104&group=Vardagsrum'
-      leave_vardagsrum:
-        url: 'http://192.168.3.103:11000/RemoveSlave?slave=192.168.3.104'
-      join_with_kontoret:
-        url: 'http://192.168.3.104:11000/AddSlave?slave=192.168.3.103&group=Vardagsrum'
-      leave_kontoret:
-        url: 'http://192.168.3.104:11000/RemoveSlave?slave=192.168.3.103'
-     
+  rest_command:
+    join_with_vardagsrum:
+      url: 'http://192.168.3.103:11000/AddSlave?slave=192.168.3.104&group=Vardagsrum'
+    leave_vardagsrum:
+      url: 'http://192.168.3.103:11000/RemoveSlave?slave=192.168.3.104'
+    join_with_kontoret:
+      url: 'http://192.168.3.104:11000/AddSlave?slave=192.168.3.103&group=Vardagsrum'
+    leave_kontoret:
+      url: 'http://192.168.3.104:11000/RemoveSlave?slave=192.168.3.103'
   
