@@ -1,183 +1,60 @@
 """
-Flux for Home-Assistant.
+Automatic Media Player switches for Google Assistant by Erik Schumann (@schusto)
 
-The idea was taken from https://github.com/KpaBap/hue-flux/
-
-For more details about this component, please refer to the documentation at
-https://home-assistant.io/components/switch.flux/
 """
 
-import datetime
 import logging
 
 import voluptuous as vol
 
 import homeassistant.helpers.config_validation as cv
-from homeassistant.components.light import (
-    is_on, turn_on, VALID_TRANSITION, ATTR_TRANSITION)
+
 from homeassistant.components.switch import DOMAIN, SwitchDevice
 from homeassistant.const import (
-    CONF_NAME, CONF_PLATFORM, CONF_LIGHTS, CONF_MODE)
+    CONF_NAME, CONF_PLATFORM, CONF_MEDIA_PLAYER, CONF_MODE)
 from homeassistant.helpers.event import (
     track_time_change, async_track_state_change)
 
-from homeassistant.helpers.sun import get_astral_event_date
 from homeassistant.util import slugify
-from homeassistant.util.color import (
-    color_temperature_to_rgb, color_RGB_to_xy,
-    color_temperature_kelvin_to_mired)
-from homeassistant.util.dt import now as dt_now
 
 _LOGGER = logging.getLogger(__name__)
 
-CONF_START_TIME = 'start_time'
-CONF_STOP_TIME = 'stop_time'
-CONF_START_CT = 'start_colortemp'
-CONF_SUNSET_CT = 'sunset_colortemp'
-CONF_STOP_CT = 'stop_colortemp'
-CONF_BRIGHTNESS = 'brightness'
-CONF_DISABLE_BRIGTNESS_ADJUST = 'disable_brightness_adjust'
-CONF_INIT_ON_TURN_ON = 'init_on_turn_on'
-CONF_INTERVAL = 'interval'
-
-MODE_XY = 'xy'
-MODE_MIRED = 'mired'
-MODE_RGB = 'rgb'
-DEFAULT_MODE = MODE_XY
-DEPENDENCIES = ['light']
+CONF_PREFIX = 'prefix'
+DEPENDENCIES = ['media_player']
 
 
 PLATFORM_SCHEMA = vol.Schema({
-    vol.Required(CONF_PLATFORM): 'my_flux',
-    vol.Required(CONF_LIGHTS): cv.entity_ids,
-    vol.Optional(CONF_NAME, default="MyFlux"): cv.string,
-    vol.Optional(CONF_START_TIME): cv.time,
-    vol.Optional(CONF_STOP_TIME, default=datetime.time(22, 0)): cv.time,
-    vol.Optional(CONF_START_CT, default=4000):
-        vol.All(vol.Coerce(int), vol.Range(min=1000, max=40000)),
-    vol.Optional(CONF_SUNSET_CT, default=3000):
-        vol.All(vol.Coerce(int), vol.Range(min=1000, max=40000)),
-    vol.Optional(CONF_STOP_CT, default=1900):
-        vol.All(vol.Coerce(int), vol.Range(min=1000, max=40000)),
-    vol.Optional(CONF_BRIGHTNESS):
-        vol.All(vol.Coerce(int), vol.Range(min=0, max=255)),
-    vol.Optional(CONF_DISABLE_BRIGTNESS_ADJUST): cv.boolean,
-    vol.Optional(CONF_INIT_ON_TURN_ON): cv.boolean,
-    vol.Optional(CONF_MODE, default=DEFAULT_MODE):
-        vol.Any(MODE_XY, MODE_MIRED, MODE_RGB),
-    vol.Optional(CONF_INTERVAL, default=180): cv.positive_int,
-    vol.Optional(ATTR_TRANSITION, default=180): VALID_TRANSITION
+    vol.Required(CONF_PLATFORM): 'mp_for_ga',
+    vol.Required(CONF_MEDIA_PLAYER): cv.entity_ids,
+    vol.Optional(CONF_NAME, default="mp_for_ga"): cv.string,
+    vol.Optional(CONF_PREFIX): cv.string
 })
 
 
-
-
-
-def set_lights_xy(hass, lights, x_val, y_val, brightness, transition, lasttemp):
+def set_lights_xy(hass, lights, x_val, y_val, brightness, transition, lastcolor):
     """Set color of array of lights."""
     for light in lights:
         if is_on(hass, light):
             states = hass.states.get(light)
-            if (lasttemp == 0) or (states.attributes.get('xy_color') == lasttemp):
+            if (lastcolor == 0) or (states.attributes.get('xy_color') == lastcolor):
                 turn_on(hass, light,
                         xy_color=[x_val, y_val],
                         brightness=brightness,
                         transition=transition)
     return [x_val, y_val]
 
-
-def set_lights_temp(hass, lights, mired, brightness, transition, lasttemp):
-    """Set color of array of lights."""
-    for light in lights:
-        if is_on(hass, light):
-            states = hass.states.get(light)
-            if (lasttemp == 0) or (states.attributes.get('color_temp') == lasttemp):
-                turn_on(hass, light,
-                        color_temp=int(mired),
-                        brightness=brightness,
-                        transition=transition)
-    return int(mired)
-
-
-def set_lights_rgb(hass, lights, rgb, transition, lasttemp):
-    """Set color of array of lights."""
-    for light in lights:
-        if is_on(hass, light):
-            states = hass.states.get(light)
-            if (lasttemp == 0) or (states.attributes.get('rgb_color') == lasttemp):
-                turn_on(hass, light,
-                    rgb_color=rgb,
-                    transition=transition)
-    return rgb
-
-def force_light_xy(hass, lights, x_val, y_val, brightness):
-    """Set color of light."""
-    _LOGGER.debug("force_light_xy called for lights %s, xy color %s, brightness %s",
-                lights, [x_val, y_val], brightness)
-    if not isinstance(lights, (list, tuple)):
-        lights = [lights]
-    for light in lights:
-        _LOGGER.debug("checking light %s for on state %s", light, is_on(hass, light))
-        if is_on(hass, light):
-            _LOGGER.debug("Flux forced light xy for %s",
-                light)
-            turn_on(hass, light,
-                    xy_color=[x_val, y_val],
-                    brightness=brightness)
-    return [x_val, y_val]
-
-def force_light_temp(hass, lights, mired, brightness):
-    """Set color of light."""
-    _LOGGER.debug("force_light_temp called for lights %s, mired %s, brightness %s",
-                lights, mired, brightness)
-    if not isinstance(lights, (list, tuple)):
-        lights = [lights]
-    for light in lights:
-        _LOGGER.debug("checking light %s for on state %s", light, is_on(hass, light))
-        if is_on(hass, light):
-            _LOGGER.debug("Flux forced light temp for %s",
-                light)
-            turn_on(hass, light,
-                    color_temp=int(mired),
-                    brightness=brightness)
-    return int(mired)
-
-def force_light_rgb(hass, lights, rgb):
-    """Set color of light."""
-    _LOGGER.debug("force_light_rgb called for lights %s, rgb %s",
-                lights, rgb)
-    if not isinstance(lights, (list, tuple)):
-        lights = [lights]
-    for light in lights:
-        _LOGGER.debug("checking light %s for on state %s", light, is_on(hass, light))
-        if is_on(hass, light):
-            _LOGGER.debug("Flux forced light rgb for %s",
-                light)
-            turn_on(hass, light,
-                    rgb_color=rgb)
-    return rgb
-
 # pylint: disable=unused-argument
 def setup_platform(hass, config, add_devices, discovery_info=None):
-    """Set up the Flux switches."""
+    """Set up the MP_for_GA switches."""
     name = config.get(CONF_NAME)
-    lights = config.get(CONF_LIGHTS)
-    start_time = config.get(CONF_START_TIME)
-    stop_time = config.get(CONF_STOP_TIME)
-    start_colortemp = config.get(CONF_START_CT)
-    sunset_colortemp = config.get(CONF_SUNSET_CT)
-    stop_colortemp = config.get(CONF_STOP_CT)
-    brightness = config.get(CONF_BRIGHTNESS)
-    disable_brightness_adjust = config.get(CONF_DISABLE_BRIGTNESS_ADJUST)
-    init_on_turn_on = config.get(CONF_INIT_ON_TURN_ON)
-    mode = config.get(CONF_MODE)
-    interval = config.get(CONF_INTERVAL)
-    transition = config.get(ATTR_TRANSITION)
-    last_colortemp = 0
-    flux = FluxSwitch(name, hass, lights, start_time, stop_time,
-                      start_colortemp, sunset_colortemp, stop_colortemp,
-                      brightness, disable_brightness_adjust, mode, interval,
-                      transition, last_colortemp, init_on_turn_on)
+    mps = config.get(CONF_MEDIA_PLAYER)
+    prefix = config.get(CONF_PREFIX)
+
+    for mp in mps:
+        mp_switch[mp] = MpSwitch(name, hass, mp, prefix)
+
+		
+		
     add_devices([flux])
 
     def update(call=None):
@@ -195,31 +72,21 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     hass.services.register(DOMAIN, service_name, force_update)
 
 
-class FluxSwitch(SwitchDevice):
+class MpSwitch(SwitchDevice):
     """Representation of a Flux switch."""
 
-    def __init__(self, name, hass, lights, start_time, stop_time,
-                 start_colortemp, sunset_colortemp, stop_colortemp,
-                 brightness, disable_brightness_adjust, mode, interval,
-                 transition, last_colortemp, init_on_turn_on):
+    def __init__(self, name, hass, mp, prefix):
         """Initialize the Flux switch."""
         self._name = name
         self.hass = hass
-        self._lights = lights
-        self._start_time = start_time
-        self._stop_time = stop_time
-        self._start_colortemp = start_colortemp
-        self._sunset_colortemp = sunset_colortemp
-        self._stop_colortemp = stop_colortemp
-        self._brightness = brightness
-        self._disable_brightness_adjust = disable_brightness_adjust
-        self._mode = mode
-        self._interval = interval
-        self._transition = transition
-        self.unsub_tracker = None
-        self._last_colortemp = 0
-        self._init_on_turn_on = False
-
+        self._mp = mp
+        self._prefix = prefix
+        self.state
+        self.play
+        self.stop
+        self.previous
+        self.next
+        self.shuffle
     @property
     def name(self):
         """Return the name of the device if any."""

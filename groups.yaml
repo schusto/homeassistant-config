@@ -120,6 +120,8 @@ status:
   - sensor.vader_imorgon_symbol
   - sensor.vader_imorgon_temperature
   - sensor.vader_imorgon_precipitation
+  - sensor.mqtt_sensor
+  - sensor.mqtt_nexa
   - group.erik
   - group.johanna
   - group.ivan

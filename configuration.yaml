@@ -143,6 +143,7 @@ sensor:
       - temperature
       - precipitation
   - platform: mqtt
+    name: Nexa
     state_topic: "homeassistant/sensor/nexa"
 
 binary_sensor:
