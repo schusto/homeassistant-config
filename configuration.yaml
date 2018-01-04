@@ -50,9 +50,9 @@ device_tracker:
 logger:
   default: warning
   logs:
-    custom_components.switch.my_flux: debug
-    homeassistant.components.mqtt: debug
-#    homeassistant.components.switch.broadlink: debug
+#    custom_components.switch.my_flux: info
+    homeassistant.components.mqtt: info
+    homeassistant.components.switch.broadlink: debug
 #    homeassistant.components.duckdns: debug
 #    homeassistant.components.device_tracker: info
 #    homeassistant.components.discovery: info
@@ -104,8 +104,13 @@ updater:
 discovery:
 
 # Allows you to issue voice commands from the frontend in enabled browsers
-conversation:
-
+# conversation:
+recorder:
+  purge_interval: 2
+  purge_keep_days: 5
+  exclude:
+    domains:
+      - media_player
 # Enables support for tracking state changes over time
 history:
 
@@ -119,8 +124,8 @@ logbook:
 sun:
 
 # Text to speech
-tts:
-  - platform: google
+# tts:
+#  - platform: google
   
 ifttt:
   key: !secret ifttt_token
@@ -153,11 +158,11 @@ binary_sensor:
 
 media_player:
   - platform: samsungtv
-    scan_interval: 10
+    scan_interval: 30
     name: samsung_tv_remote
     host: 192.168.3.105
   - platform: kodi
-    scan_interval: 10
+    scan_interval: 30
     host: 192.168.3.102
     port: 80
     name: Kodi

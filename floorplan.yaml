@@ -31,9 +31,14 @@
             - switch.light_3
             - switch.light_4
             - switch.light_5
+            - switch.light_6
             - light.stalampa
             - light.vardagsrum
-            - light.sovrum_2
+            - light.vardagsrum_tak
+            - light.matbord
+            - light.fonster_tv
+            - light.bank_tv
+            - light.sovrum_ceiling
           states:
             - state: 'on'
               class: 'light-on'
@@ -41,6 +46,16 @@
               class: 'light-off'
           action:
             domain: homeassistant   # This optional parameter allows you to use other services such as homeassistant.toggle like here.
+            service: toggle
+        - name: light automization
+          entities:
+            - switch.my_flux
+          states:
+            - state: 'on'
+              class: spotify-on
+            - state: 'off'
+              class: 'light-off'
+          action:
             service: toggle
         - name: media_players_toggle
           entities:
@@ -201,29 +216,54 @@
             - state: 'not_home'
               class: 'tracker-off'
               
-        - name: select_wakeup_lights
+        - name: show_floorplan
           elements:
-            - button_select_lights
+            - show_page0
           action:
             domain: class
-            service: toggle
+            service: select
             data:
               elements:
-                - WakeUp
-              classes:
-                - layer-visible
-                - layer-hidden
-              default_class: layer-hidden                
-        - name: done_wakeup_lights
+                - id: page0
+                  class: layer-visible
+                - id: page1
+                  class: layer-hidden
+                - id: page2
+                  class: layer-hidden
+        - name: show_media
           elements:
-            - button_select_lights_done
+            - show_page2
           action:
             domain: class
-            service: toggle
+            service: select
             data:
               elements:
-                - WakeUp
-              classes:
-                - layer-hidden
-                - layer-visible
-              default_class: layer-visible               
+                - id: page2
+                  class: layer-visible
+                - id: page1
+                  class: layer-hidden
+                - id: page0
+                  class: layer-hidden
+        - name: show_alarm
+          elements:
+            - show_page1
+          action:
+            domain: class
+            service: select
+            data:
+              elements:
+                - id: page1
+                  class: layer-visible
+                - id: page0
+                  class: layer-hidden
+                - id: page2
+                  class: layer-hidden
+        - name: Defaults
+          elements:
+            - show.page1
+          action:
+            data:
+              elements:
+                - page1
+                - page2
+              default_class: layer-hidden

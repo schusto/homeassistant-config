@@ -149,10 +149,10 @@
     - service: frontend.set_theme
       data:
         name: material_dark
-#    - service: switch.myflux_force_update
-#    - service: switch.turn_on
-#      data:
-#        entity_id: switch.myflux
+    - service: switch.my_flux_force_update
+    - service: switch.turn_on
+      data:
+        entity_id: switch.my_flux
 - action:
   - data:
       event: ErikHome

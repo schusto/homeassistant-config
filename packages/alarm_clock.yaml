@@ -26,14 +26,20 @@ alarm_clock:
     alarm_light_window:
       name: Fönster i Vardagsrummet
       initial: on
-    alarm_light_tv:
-      name: TV område i Vardagsrummet
-      initial: off
     alarm_light_kontoret:
       name: Kontoret
       initial: on
     alarm_light_sovrum:
-      name: Sovrummet
+      name: Sovrummet 
+      initial: on
+    alarm_light_vardagsrum_tak:
+      name: Taklampor Vardagsrummet
+      initial: off
+    alarm_light_vardagsrum:
+      name: Andra lampor Vardagsrummet
+      initial: off
+    alarm_light_barnrum:
+      name: Barnrummen
       initial: on
       
   sensor:
@@ -55,15 +61,23 @@ alarm_clock:
         - service: switch.turn_on
           data:
             entity_id: switch.light_1
-    wake_up_2:
-      sequence:
-        - condition: state
-          entity_id: input_boolean.alarm_light_tv
-          state: 'on'
         - service: switch.turn_on
           data:
-            entity_id: switch.light_2          
-    wake_up_3:
+            entity_id: switch.light_5
+        - service: light.turn_on
+          data:
+            entity_id: light.vardagsrum
+            profile: reading
+        - service: light.turn_on
+          data:
+            entity_id: light.vardagsrum
+            profile: energize
+            transition: 600
+            
+            
+            
+# Add Hue            
+    wake_up_2:
       sequence:
         - condition: state
           entity_id: input_boolean.alarm_light_sovrum
@@ -71,6 +85,13 @@ alarm_clock:
         - service: switch.turn_on
           data:
             entity_id: switch.light_3
+# plus taklampa            
+    wake_up_3:
+      sequence:
+        - condition: state
+          entity_id: input_boolean.alarm_light_vardagsrum_tak
+          state: 'on'
+#Hue
     wake_up_4:
       sequence:
         - condition: state
@@ -79,6 +100,17 @@ alarm_clock:
         - service: switch.turn_on
           data:
             entity_id: switch.light_4
+    wake_up_5:
+      sequence:
+        - condition: state
+          entity_id: input_boolean.alarm_light_barnrum
+          state: 'on'
+        - service: switch.turn_on
+          data:
+            entity_id: switch.light_2
+        - service: switch.turn_on
+          data:
+            entity_id: switch.light_6
     wake_up_h_inc:
       sequence:
         - service: input_number.increment
@@ -106,6 +138,7 @@ alarm_clock:
        - service: script.wake_up_2
        - service: script.wake_up_3
        - service: script.wake_up_4
+       - service: script.wake_up_5
 
   group:
     alarmclock:
@@ -128,9 +161,11 @@ alarm_clock:
       icon: mdi:lightbulb
       entities: 
         - input_boolean.alarm_light_window
-        - input_boolean.alarm_light_tv
+        - input_boolean.alarm_light_vardagsrum
+        - input_boolean.alarm_light_vardagsrum_tak
         - input_boolean.alarm_light_kontoret
         - input_boolean.alarm_light_sovrum  
+        - input_boolean.alarm_light_barnrum
 
   automation:
     - alias: Wake me up with bedroom light transition for weekdays

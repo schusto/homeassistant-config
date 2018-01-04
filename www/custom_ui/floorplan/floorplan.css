@@ -154,3 +154,12 @@ svg, svg * {
 .tracker-on {
   fill: #000000 !important;
 }
+
+.layer-hidden {
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+.layer-visible {
+  opacity: 100 !important;
+  visibility: visible !important;
+}

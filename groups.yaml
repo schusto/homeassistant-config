@@ -106,7 +106,6 @@ hue:
   - sensor.vardagsrum_kontakt
   - sensor.remote_vardagsrum_update
   - sensor.remote_sovrum_update
-  - group.switches_vardagsrum
   - group.all_lights
   
 status:
@@ -207,8 +206,11 @@ light:
   - switch.light_3
   - switch.light_4
   - switch.light_5
-  - light.sovrum_2
+  - switch.light_6
+  - light.sovrum_ceiling
   - light.vardagsrum
+  - light.vardagsrum_tak
+  - light.matbord
 
 switches_vardagsrum:
   view: no

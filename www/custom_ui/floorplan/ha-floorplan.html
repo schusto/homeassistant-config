@@ -729,7 +729,17 @@
                     }
                   }
                   break;
-              }
+                case 'select':
+                  let svg = Polymer.dom(this.instance.$.floorplan).querySelector('svg');
+                  let classes = action.data.classes;
+                  for (let otherElement of action.data.elements) {
+                    let otherSvgElement = $(svg).find(`[id="${otherElement.id}"]`);
+                    let otherSvgElementclass = otherElement.class;
+                
+                      $(otherSvgElement).removeClass().addClass(otherSvgElementclass);
+                  }
+                  break;
+ 			  }
               break;
 
             default:
