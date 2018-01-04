@@ -98,26 +98,36 @@ def set_lights_xy(hass, lights, x_val, y_val, brightness, transition, lastcolor)
 
 def set_lights_temp(hass, lights, mired, brightness, transition, lastcolor):
     """Set color of array of lights."""
+    _LOGGER.debug("Set_lights_temp called for lights %s, mired %s, brightness %s",
+                lights, mired, brightness)
     for light in lights:
+        _LOGGER.debug("checking light %s for on state %s", light, is_on(hass, light))
         if is_on(hass, light):
             states = hass.states.get(light)
+            _LOGGER.debug("checking light %s for color change %i", light, (abs(states.attributes.get('color_temp') - lastcolor)))
             if (lastcolor == 0) or ( abs(states.attributes.get('color_temp') - lastcolor)  < 10):
                 turn_on(hass, light,
                         color_temp=int(mired),
                         brightness=brightness,
                         transition=transition)
+                _LOGGER.debug("Flux forced light temp for %s",
+                    light)
     return int(mired)
 
 
 def set_lights_rgb(hass, lights, rgb, transition, lastcolor):
     """Set color of array of lights."""
     for light in lights:
+        _LOGGER.debug("checking light %s for on state %s", light, is_on(hass, light))
         if is_on(hass, light):
             states = hass.states.get(light)
+            _LOGGER.debug("checking light %s for color change %i", light, (abs(states.attributes.get('rgb_color') - lastcolor)))
             if (lastcolor == 0) or (abs(states.attributes.get('rgb_color') - lastcolor) < 100):
                 turn_on(hass, light,
                     rgb_color=rgb,
                     transition=transition)
+                _LOGGER.debug("Flux forced light temp for %s",
+                    light)
     return rgb
 
 def force_light_xy(hass, lights, x_val, y_val, brightness):
@@ -228,7 +238,7 @@ class FluxSwitch(SwitchDevice):
         self._transition = transition
         self.unsub_tracker = None
         self._last_color = 0
-        self._init_on_turn_on = False
+        self._init_on_turn_on = init_on_turn_on
 
     @property
     def name(self):
@@ -249,11 +259,15 @@ class FluxSwitch(SwitchDevice):
         if self.is_on:
             return
 
+        _LOGGER.debug("Flux++ subscribing to timer")
+
         self.unsub_tracker = track_time_change(
             self.hass, self.flux_update, second=[0, self._interval])
         if self._init_on_turn_on:
             self.unsub_turn_on_trigger = async_track_state_change(self.hass, 
                 self._lights, self.flux_force_update_cb, 'off', 'on')
+            _LOGGER.debug("Flux++ subscribing to turn on events %s with %s",
+                self._lights, self.unsub_turn_on_trigger)
         else:
             self.unsub_turn_on_trigger = None
 
@@ -475,7 +489,7 @@ class FluxSwitch(SwitchDevice):
 
 
     def flux_force_update_cb(self, entity, old_state, new_state):
-        _LOGGER.info("Flux Callback for %s triggered for entity %s",
+        _LOGGER.debug("Flux Callback for %s triggered for entity %s",
             self, entity)
         call = None
         self.flux_force_update(call, entity)

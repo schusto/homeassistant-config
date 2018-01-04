@@ -2,8 +2,8 @@ my_flux_conf:
   switch:
     - platform: flux++
       name: My Flux
-      disable_brightness_adjust: true
-      init_on_turn_on: true
+      disable_brightness_adjust: True
+      init_on_turn_on: True
       mode: mired
       transition: 300
       interval: 300

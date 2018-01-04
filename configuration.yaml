@@ -50,7 +50,8 @@ device_tracker:
 logger:
   default: warning
   logs:
-#    custom_components.switch.my_flux: info
+#    custom_components.switch: debug
+#   custom_components.switch.flux++: debug
     homeassistant.components.mqtt: info
     homeassistant.components.switch.broadlink: debug
 #    homeassistant.components.duckdns: debug
